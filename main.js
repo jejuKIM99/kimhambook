@@ -418,11 +418,14 @@ function initApp() {
       .querySelector(`.thumbnail[data-index="${index}"]`)
       .classList.add("active");
 
-    const newSliderImageUrl = imageUrlsSlider[index];
+    const slideData = getSlideDataFromHTML(index);
+    const initialStillImageUrl = slideData.gridItemImageUrl; // 정지 이미지 URL
+    const newSliderImageUrl = imageUrlsSlider[index]; // GIF 이미지 URL
 
-    // Set transition elements
-    sliderImageNext.style.backgroundImage = newSliderImageUrl;
-    sliderImageBg.style.backgroundImage = newSliderImageUrl;
+    // 초기에는 정지 이미지를 사용합니다.
+    sliderImage.style.backgroundImage = initialStillImageUrl;
+    sliderImageBg.style.backgroundImage = initialStillImageUrl;
+    sliderImageNext.style.backgroundImage = initialStillImageUrl; // 다음 이미지도 일단 정지 이미지로 설정
 
     sliderImage.style.backgroundSize = "cover";
     sliderImage.style.backgroundPosition = "center";
@@ -454,49 +457,72 @@ function initApp() {
       scale: 1
     });
 
+    // GIF 로딩을 위한 Promise 생성
+    const gifLoadPromise = new Promise((gifResolve) => {
+      const img = new Image();
+      img.src = newSliderImageUrl.replace(/url\(['"]?([^'"]*)['"]?\)/, '$1'); 
+      img.onload = () => {
+        gifResolve();
+      };
+      img.onerror = () => {
+        console.error("Failed to load GIF:", newSliderImageUrl);
+        gifResolve(); // 에러 발생 시에도 블로킹 방지를 위해 resolve
+      };
+    });
+
+    // 2초 지연을 위한 Promise 생성
+    const delayPromise = new Promise((delayResolve) => {
+      setTimeout(delayResolve, 2000); // 2초 지연
+    });
+
     const masterTl = gsap.timeline({
       onComplete: () => {
-        // Update main image
-        sliderImage.style.backgroundImage = newSliderImageUrl;
-        gsap.set([sliderImageNext, sliderImageBg, transitionOverlay], {
-          opacity: 0,
-          x: 0,
-          y: 0,
-          visibility: "hidden"
-        });
-        gsap.set(sliderImage, {
-          x: 0,
-          opacity: 1
-        });
+        // GIF 로딩 또는 2초 지연 중 먼저 완료되는 것을 기다립니다.
+        Promise.race([gifLoadPromise, delayPromise]).then(() => {
+            // GIF 로딩이 완료되면 슬라이더 이미지와 배경을 GIF로 업데이트합니다.
+            sliderImage.style.backgroundImage = newSliderImageUrl;
+            sliderImageBg.style.backgroundImage = newSliderImageUrl;
 
-        // Update with text from HTML
-        updateContent(index);
-        activeIndex = index;
+            gsap.set([sliderImageNext, sliderImageBg, transitionOverlay], {
+                opacity: 0,
+                x: 0,
+                y: 0,
+                visibility: "hidden"
+            });
+            gsap.set(sliderImage, {
+                x: 0,
+                opacity: 1
+            });
 
-        // Show content again
-        const showTl = gsap.timeline({
-          onComplete: () => {
-            isAnimating = false;
-          }
+            // Update with text from HTML
+            updateContent(index);
+            activeIndex = index;
+
+            // Show content again
+            const showTl = gsap.timeline({
+                onComplete: () => {
+                    isAnimating = false;
+                }
+            });
+            showTl.to(
+                contentTitleSpan,
+                {
+                    y: 0,
+                    duration: TIMING.BASE,
+                    ease: "sideEase"
+                },
+                0
+            );
+            showTl.to(
+                contentParagraph,
+                {
+                    opacity: 1,
+                    duration: TIMING.BASE,
+                    ease: "mainEase"
+                },
+                TIMING.STAGGER_SMALL
+            );
         });
-        showTl.to(
-          contentTitleSpan,
-          {
-            y: 0,
-            duration: TIMING.BASE,
-            ease: "sideEase"
-          },
-          0
-        );
-        showTl.to(
-          contentParagraph,
-          {
-            opacity: 1,
-            duration: TIMING.BASE,
-            ease: "mainEase"
-          },
-          TIMING.STAGGER_SMALL
-        );
       }
     });
 
