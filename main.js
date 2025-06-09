@@ -418,14 +418,19 @@ function initApp() {
       .querySelector(`.thumbnail[data-index="${index}"]`)
       .classList.add("active");
 
-    const slideData = getSlideDataFromHTML(index);
-    const initialStillImageUrl = slideData.gridItemImageUrl; // 정지 이미지 URL
-    const newSliderImageUrl = imageUrlsSlider[index]; // GIF 이미지 URL
+    const slideData = getSlideDataFromHTML(index); // 새로운 슬라이드의 데이터
+    const previousSlideStillImageUrl = getSlideDataFromHTML(previousIndex).gridItemImageUrl; // 이전 슬라이드의 정지 이미지 URL
+    const newSliderImageUrl = imageUrlsSlider[index]; // 새로운 슬라이드의 GIF 이미지 URL
 
-    // 초기에는 정지 이미지를 사용합니다.
-    sliderImage.style.backgroundImage = initialStillImageUrl;
-    sliderImageBg.style.backgroundImage = initialStillImageUrl;
-    sliderImageNext.style.backgroundImage = initialStillImageUrl; // 다음 이미지도 일단 정지 이미지로 설정
+    // sliderImage는 현재 보고 있는 슬라이드의 이미지를 유지합니다.
+    // sliderImageBg와 sliderImageNext는 새로 로드될 슬라이드의 정지 이미지로 설정하여
+    // 애니메이션 시작 시 다음 슬라이드의 미리보기 이미지를 보여줍니다.
+    sliderImageBg.style.backgroundImage = slideData.gridItemImageUrl; // 새로운 슬라이드의 정지 이미지로 설정
+    sliderImageNext.style.backgroundImage = slideData.gridItemImageUrl; // 새로운 슬라이드의 정지 이미지로 설정
+
+    // 이전 슬라이드의 현재 GIF 상태를 sliderImage에 정확히 반영합니다. (혹시 이전 슬라이드가 GIF였다면)
+    // 이전에 activeIndex에 설정된 배경 이미지를 그대로 사용합니다.
+    // gsap.set(sliderImage, { backgroundImage: imageUrlsSlider[activeIndex] }); // 이 줄은 필요 없음, 기존 상태 유지
 
     sliderImage.style.backgroundSize = "cover";
     sliderImage.style.backgroundPosition = "center";
@@ -482,6 +487,7 @@ function initApp() {
             // GIF 로딩이 완료되면 슬라이더 이미지와 배경을 GIF로 업데이트합니다.
             sliderImage.style.backgroundImage = newSliderImageUrl;
             sliderImageBg.style.backgroundImage = newSliderImageUrl;
+            sliderImageNext.style.backgroundImage = newSliderImageUrl; // 확실하게 다음 GIF로 업데이트
 
             gsap.set([sliderImageNext, sliderImageBg, transitionOverlay], {
                 opacity: 0,
