@@ -203,7 +203,7 @@ function initApp() {
 
       // 2초 지연을 위한 Promise 생성
       const delayPromise = new Promise((delayResolve) => {
-        setTimeout(delayResolve, 3000); // 2초 지연
+        setTimeout(delayResolve, 3000); // 3초 지연
       });
 
       // STEP 1: Expand height to 100vh (using FLIP)
@@ -477,7 +477,7 @@ function initApp() {
 
     // 2초 지연을 위한 Promise 생성
     const delayPromise = new Promise((delayResolve) => {
-      setTimeout(delayResolve, 3000); // 2초 지연
+      setTimeout(delayResolve, 3000); // 3초 지연
     });
 
     const masterTl = gsap.timeline({
