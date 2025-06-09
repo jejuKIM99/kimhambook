@@ -6,13 +6,13 @@
   <link rel="stylesheet" href="./styles.css" />
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"
-    integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA=="
+    xintegrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA=="
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   ></script>
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Flip.min.js"
-    integrity="sha512-BQAAkzDHfly7jPwVhh0SpGxbvjRNEapCNkJ0VNSMFervZLsaeUch4P92skLoD70NXWlI1GOgrXRfR50b/quSSg=="
+    xintegrity="sha512-BQAAkzDHfly7jPwVhh0SpGxbvjRNEapCNkJ0VNSMFervZLsaeUch4P92skLoD70NXWlI1GOgrXRfR50b/quSSg==\"\
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   ></script>
@@ -27,19 +27,16 @@
   <div class="container">
     <div class="grid-container">
       <div class="grid" id="grid">
-        <!--
-          각 grid-item에 data-title과 data-paragraph를 추가했습니다.
-          JS에서 슬라이더 모드로 전환 시, data-* 속성으로부터 제목과 문단을 가져와 표시합니다.
-        -->
         <div
           class="grid-item"
           data-index="0"
-          data-title="URBAN GEOMETRY"
+          data-title="Red_Line_Awards"
           data-paragraph="
-            The city speaks in angles and lines. What appears chaotic is actually ordered. 
-            When we slow down enough to truly see, patterns emerge from noise. 
-            Photography is meditation—a practice of presence that reveals the hidden structure 
+            The city speaks in angles and lines. What appears chaotic is actually ordered.
+            When we slow down enough to truly see, patterns emerge from noise.
+            Photography is meditation—a practice of presence that reveals the hidden structure
             beneath the surface of our daily experience."
+          data-slider-image="./redline_inner.gif"
         >
           <div
             class="grid-item-img"
@@ -51,10 +48,11 @@
           data-index="1"
           data-title="Red_Line_Awards"
           data-paragraph="
-            Nature doesn't try to be beautiful. It simply is. These patterns exist whether 
-            we observe them or not. The creative act is not about making something new, 
-            but about seeing what's already there. True art emerges when we remove ourselves 
+            Nature doesn't try to be beautiful. It simply is. These patterns exist whether
+            we observe them or not. The creative act is not about making something new,
+            but about seeing what's already there. True art emerges when we remove ourselves
             from the equation."
+          data-slider-image="https://cdn.cosmos.so/c7af8b26-313a-40e4-9081-85f7fde00c22?format=jpeg"
         >
           <div
             class="grid-item-img"
@@ -64,16 +62,17 @@
         <div
           class="grid-item"
           data-index="2"
-          data-title="SHADOW PLAY"
+          data-title="Cojus-cli project"
           data-paragraph="
-            Light creates shadow. Shadow defines light. Neither exists without the other. 
-            This duality mirrors our own inner landscape. The photograph captures not just the 
-            external world, but the photographer's state of mind. What we choose to frame 
+            Light creates shadow. Shadow defines light. Neither exists without the other.
+            This duality mirrors our own inner landscape. The photograph captures not just the
+            external world, but the photographer's state of mind. What we choose to frame
             reveals what we value."
+          data-slider-image="./cojus_inner.gif"
         >
           <div
             class="grid-item-img"
-            style="background-image: url(https://cdn.cosmos.so/03a36d87-af8c-4cfe-bfed-7a3dd502404b.?format=jpeg)"
+            style="background-image: url(./cojus.png)"
           ></div>
         </div>
         <div
@@ -81,9 +80,10 @@
           data-index="3"
           data-title="MINIMALIST FORMS"
           data-paragraph="
-            When we strip away the unnecessary, what remains? The essence. The truth. These images 
-            aren't about what's there, but what isn't. Silence between notes creates the music. 
+            When we strip away the unnecessary, what remains? The essence. The truth. These images
+            aren't about what's there, but what isn't. Silence between notes creates the music.
             The space between thoughts is where creativity lives. Simplicity is the ultimate sophistication."
+          data-slider-image="https://cdn.cosmos.so/bdb2a659-2838-4055-a82e-f145c3fd4467?format=jpeg"
         >
           <div
             class="grid-item-img"
@@ -96,9 +96,11 @@
           data-index="4"
           data-title="About Me"
           data-paragraph="
-            Without color, we see differently. Form and texture speak louder. The world simplified 
-            to light and dark reveals truths that color often conceals. In this space between extremes, 
-            we find clarity. The photograph becomes a mirror reflecting not just what we see, but how we see."
+            Without color, we see differently. Form and texture speak louder.
+            The world simplified to light and dark reveals truths that color often conceals.
+            In this space between extremes, we find clarity. The photograph becomes
+            a mirror reflecting not just what we see, but how we see."
+          data-slider-image="https://cdn.cosmos.so/fddfc757-d9c3-44f1-af6e-a607c3746738?format=jpeg"
         >
           <div
             class="grid-item-img"
@@ -110,10 +112,11 @@
           data-index="5"
           data-title="TEXTURAL STUDIES"
           data-paragraph="
-            Touch with your eyes. Feel the rough and smooth. These surfaces tell stories of time and 
-            transformation. Our minds crave texture—it grounds us in the physical world. In an increasingly 
-            digital existence, these tactile reminders connect us to our primal nature and the healing power 
+            Touch with your eyes. Feel the rough and smooth. These surfaces tell stories of time and
+            transformation. Our minds crave texture—it grounds us in the physical world. In an increasingly
+            digital existence, these tactile reminders connect us to our primal nature and the healing power
             of sensory experience."
+          data-slider-image="https://cdn.cosmos.so/51a307de-a9ba-4c9e-ad24-beff1ce023d0?format=jpeg"
         >
           <div
             class="grid-item-img"
@@ -129,23 +132,20 @@
   <div class="slider-image" id="slider-image"></div>
   <!-- Background parallax layer -->
   <div class="slider-image-bg" id="slider-image-bg"></div>
+        <div class="darkback"></div>
   <!-- Top layer - next slide -->
   <div class="slider-image-next" id="slider-image-next"></div>
   <!-- Transition overlay -->
   <div class="transition-overlay" id="transition-overlay"></div>
 
   <div class="content" id="content">
-    <!--
-      초기 로드시 index=4 (MONOCHROME SERIES) 내용을 보여주도록 설정했습니다.
-      JS에서 슬라이더 모드로 진입할 때, 해당 data-* 속성 값을 반영하여 텍스트가 업데이트됩니다.
-    -->
     <h1 class="content-title">
       <span>About Me</span>
     </h1>
     <div class="content-paragraph" id="content-paragraph">
-      Without color, we see differently. Form and texture speak louder. 
-      The world simplified to light and dark reveals truths that color often conceals. 
-      In this space between extremes, we find clarity. The photograph becomes 
+      Without color, we see differently. Form and texture speak louder.
+      The world simplified to light and dark reveals truths that color often conceals.
+      In this space between extremes, we find clarity. The photograph becomes
       a mirror reflecting not just what we see, but how we see.
     </div>
   </div>
@@ -166,7 +166,7 @@
     <div class="thumbnail" data-index="2">
       <div
         class="thumbnail-img"
-        style="background-image: url(https://cdn.cosmos.so/03a36d87-af8c-4cfe-bfed-7a3dd502404b.?format=jpeg)"
+        style="background-image: url(./cojus.png)"
       ></div>
     </div>
     <div class="thumbnail" data-index="3">

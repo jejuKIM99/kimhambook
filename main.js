@@ -88,21 +88,27 @@ function initApp() {
   let previousIndex = 4;    // Track previous index for transitions
   let slideDirection = "right"; // Default slide direction
 
-  // Store all image URLs for easy access
-  const imageUrls = Array.from(gridItems).map(
+  // Store all grid image URLs and slider image URLs for easy access
+  const imageUrlsGrid = Array.from(gridItems).map(
     (item) => item.querySelector(".grid-item-img").style.backgroundImage
   );
 
-  // HTML에 작성한 data-* 속성에서 제목과 문단을 가져오는 함수
+  // slider image urls
+  const imageUrlsSlider = Array.from(gridItems).map(
+    (item) => `url(${item.getAttribute("data-slider-image")})`
+  );
+
+  // Function to get slide data from HTML data attributes
   const getSlideDataFromHTML = (index) => {
     const item = document.querySelector(`.grid-item[data-index="${index}"]`);
     return {
       title: item.getAttribute("data-title"),
-      paragraph: item.getAttribute("data-paragraph").trim()
+      paragraph: item.getAttribute("data-paragraph").trim(),
+      sliderImageUrl: item.getAttribute("data-slider-image")
     };
   };
 
-  // Update content based on active index (HTML에서 가져온 데이터로 세팅)
+  // Update content based on active index (set with data from HTML)
   const updateContent = (index) => {
     const data = getSlideDataFromHTML(index);
     contentTitleSpan.textContent = data.title;
@@ -114,7 +120,7 @@ function initApp() {
     if (isAnimating || currentMode === mode) return;
     isAnimating = true;
 
-    // Update switch 버튼 스타일
+    // Update switch button styles
     document
       .querySelector(".switch-button-current")
       .classList.remove("switch-button-current");
@@ -139,12 +145,12 @@ function initApp() {
       );
       const activeItemRect = activeItem.getBoundingClientRect();
 
-      // 현재 active 이미지 URL 세팅
-      const activeImageUrl = imageUrls[activeIndex];
-      sliderImage.style.backgroundImage = activeImageUrl;
-      sliderImageBg.style.backgroundImage = activeImageUrl;
+      // Set the current active slider image URL
+      const activeSliderImageUrl = imageUrlsSlider[activeIndex];
+      sliderImage.style.backgroundImage = activeSliderImageUrl;
+      sliderImageBg.style.backgroundImage = activeSliderImageUrl;
 
-      // 일관된 스타일링
+      // Consistent styling
       sliderImage.style.backgroundSize = "cover";
       sliderImage.style.backgroundPosition = "center";
       sliderImageBg.style.backgroundSize = "cover";
@@ -152,10 +158,10 @@ function initApp() {
       sliderImageNext.style.backgroundSize = "cover";
       sliderImageNext.style.backgroundPosition = "center";
 
-      // HTML에 작성된 텍스트로 업데이트
+      // Update with text from HTML
       updateContent(activeIndex);
 
-      // sliderImage를 그리드 상의 active 아이템 위치 위에 미리 위치시킴
+      // Pre-position sliderImage over the active grid item
       gsap.set(sliderImage, {
         width: activeItemRect.width,
         height: activeItemRect.height,
@@ -165,7 +171,7 @@ function initApp() {
         visibility: "visible"
       });
 
-      // STEP 1: 높이를 100vh로 확장 (FLIP 사용)
+      // STEP 1: Expand height to 100vh (using FLIP)
       const heightState = Flip.getState(sliderImage);
       gsap.set(sliderImage, {
         height: "100vh",
@@ -177,7 +183,7 @@ function initApp() {
         duration: TIMING.BASE,
         ease: "mainEase",
         onComplete: () => {
-          // STEP 2: 너비를 100vw로 확장 (FLIP 사용)
+          // STEP 2: Expand width to 100vw (using FLIP)
           const widthState = Flip.getState(sliderImage);
           gsap.set(sliderImage, {
             width: "100vw",
@@ -187,13 +193,13 @@ function initApp() {
             duration: TIMING.BASE,
             ease: "mainEase",
             onComplete: () => {
-              // 그리드를 숨김
+              // Hide the grid
               gsap.to(grid, {
                 opacity: 0,
                 duration: TIMING.SHORTEST,
                 ease: "power2.inOut"
               });
-              // 콘텐츠(타이틀, 문단, 썸네일) 보여주기 애니메이션
+              // Show content (title, paragraph, thumbnails) animation
               const contentTl = gsap.timeline({
                 onComplete: resolve
               });
@@ -242,7 +248,7 @@ function initApp() {
     });
   };
 
-  // Show grid view with 두 단계 축소 애니메이션 (너비 먼저, 그 다음 높이)
+  // Show grid view with two-step shrink animation (width first, then height)
   const showGridView = () => {
     return new Promise((resolve) => {
       const activeItem = document.querySelector(
@@ -250,7 +256,7 @@ function initApp() {
       );
       const activeItemRect = activeItem.getBoundingClientRect();
 
-      // 콘텐츠를 먼저 숨김
+      // Hide content first
       const contentTl = gsap.timeline({
         onComplete: () => {
           gsap.to(grid, {
@@ -263,7 +269,7 @@ function initApp() {
             visibility: "hidden"
           });
 
-          // STEP 1: 너비를 원래 그리드 아이템 너비로 축소 (FLIP)
+          // STEP 1: Shrink width to original grid item width (FLIP)
           const widthState = Flip.getState(sliderImage);
           gsap.set(sliderImage, {
             width: activeItemRect.width,
@@ -275,7 +281,7 @@ function initApp() {
             duration: TIMING.BASE,
             ease: "mainEase",
             onComplete: () => {
-              // STEP 2: 높이를 원래 그리드 아이템 높이로 축소 (FLIP)
+              // STEP 2: Shrink height to original grid item height (FLIP)
               const heightState = Flip.getState(sliderImage);
               gsap.set(sliderImage, {
                 height: activeItemRect.height,
@@ -285,7 +291,7 @@ function initApp() {
                 duration: TIMING.BASE,
                 ease: "mainEase",
                 onComplete: () => {
-                  // 마지막에 sliderImage 숨김
+                  // Hide sliderImage at the end
                   gsap.to(sliderImage, {
                     opacity: 0,
                     duration: TIMING.SHORTEST,
@@ -302,7 +308,7 @@ function initApp() {
         }
       });
 
-      // 썸네일 숨기기
+      // Hide thumbnails
       contentTl.to(
         thumbnailItems,
         {
@@ -314,7 +320,7 @@ function initApp() {
         },
         0
       );
-      // 문단 숨기기
+      // Hide paragraph
       contentTl.to(
         contentParagraph,
         {
@@ -324,7 +330,7 @@ function initApp() {
         },
         TIMING.STAGGER_TINY
       );
-      // 타이틀 숨기기
+      // Hide title
       contentTl.to(
         contentTitleSpan,
         {
@@ -334,7 +340,7 @@ function initApp() {
         },
         TIMING.STAGGER_SMALL
       );
-      // 컨텐츠 컨테이너 숨기기
+      // Hide content container
       contentTl.to(
         content,
         {
@@ -347,7 +353,7 @@ function initApp() {
     });
   };
 
-  // 슬라이드 전환 애니메이션
+  // Slide transition animation
   const transitionToSlide = (index) => {
     if (isAnimating || index === activeIndex) return;
     isAnimating = true;
@@ -355,17 +361,17 @@ function initApp() {
     slideDirection = index > activeIndex ? "right" : "left";
     previousIndex = activeIndex;
 
-    // 썸네일 active 업데이트
+    // Update thumbnail active state
     document.querySelector(".thumbnail.active").classList.remove("active");
     document
       .querySelector(`.thumbnail[data-index="${index}"]`)
       .classList.add("active");
 
-    const newImageUrl = imageUrls[index];
+    const newSliderImageUrl = imageUrlsSlider[index];
 
-    // transition 요소들 세팅
-    sliderImageNext.style.backgroundImage = newImageUrl;
-    sliderImageBg.style.backgroundImage = newImageUrl;
+    // Set transition elements
+    sliderImageNext.style.backgroundImage = newSliderImageUrl;
+    sliderImageBg.style.backgroundImage = newSliderImageUrl;
 
     sliderImage.style.backgroundSize = "cover";
     sliderImage.style.backgroundPosition = "center";
@@ -380,7 +386,7 @@ function initApp() {
 
     const xOffset = slideDirection === "right" ? "100%" : "-100%";
 
-    // 다음 이미지 초기 위치 설정
+    // Set initial position for the next image
     gsap.set(sliderImageNext, {
       x: xOffset,
       y: 0,
@@ -399,8 +405,8 @@ function initApp() {
 
     const masterTl = gsap.timeline({
       onComplete: () => {
-        // 메인 이미지 업데이트
-        sliderImage.style.backgroundImage = newImageUrl;
+        // Update main image
+        sliderImage.style.backgroundImage = newSliderImageUrl;
         gsap.set([sliderImageNext, sliderImageBg, transitionOverlay], {
           opacity: 0,
           x: 0,
@@ -412,11 +418,11 @@ function initApp() {
           opacity: 1
         });
 
-        // HTML에서 가져온 텍스트로 업데이트
+        // Update with text from HTML
         updateContent(index);
         activeIndex = index;
 
-        // 콘텐츠 다시 보여주기
+        // Show content again
         const showTl = gsap.timeline({
           onComplete: () => {
             isAnimating = false;
@@ -443,7 +449,7 @@ function initApp() {
       }
     });
 
-    // 현재 콘텐츠 숨기기
+    // Hide current content
     masterTl.to(
       contentParagraph,
       {
@@ -462,7 +468,7 @@ function initApp() {
       },
       TIMING.STAGGER_TINY
     );
-    // 플래시 효과
+    // Flash effect
     masterTl.to(
       transitionOverlay,
       {
@@ -481,7 +487,7 @@ function initApp() {
       },
       TIMING.STAGGER_MED
     );
-    // 현재 이미지 옆으로 밀어내기
+    // Push current image sideways
     masterTl.to(
       sliderImage,
       {
@@ -492,7 +498,7 @@ function initApp() {
       },
       0
     );
-    // 백그라운드 레이어 이동
+    // Move background layer
     masterTl.to(
       sliderImageBg,
       {
@@ -505,7 +511,7 @@ function initApp() {
       },
       TIMING.STAGGER_TINY
     );
-    // 다음 이미지 슬라이드 인
+    // Slide in next image
     masterTl.to(
       sliderImageNext,
       {
@@ -518,7 +524,7 @@ function initApp() {
     );
   };
 
-  // 썸네일 클릭 이벤트
+  // Thumbnail click event
   thumbnailItems.forEach((thumb) => {
     thumb.addEventListener("click", () => {
       if (currentMode !== "slider") return;
@@ -527,7 +533,7 @@ function initApp() {
     });
   });
 
-  // 윈도우 리사이즈 시 슬라이더 크기 유지
+  // Maintain slider size on window resize
   window.addEventListener("resize", () => {
     if (currentMode === "slider") {
       gsap.set(sliderImage, {
@@ -541,7 +547,7 @@ function initApp() {
     }
   });
 
-  // 스위치 버튼 호버 효과
+  // Switch button hover effect
   const switchButtons = document.querySelectorAll(".switch-button");
   switchButtons.forEach((button) => {
     button.addEventListener("mouseenter", () => {
@@ -557,23 +563,23 @@ function initApp() {
     });
   });
 
-  // 스위치 클릭 이벤트 연결
+  // Connect switch click events
   switchGrid.onclick = () => toggleView("grid");
   switchSlider.onclick = () => toggleView("slider");
 
-  // 키보드 내비게이션 (슬라이더 모드 전제)
+  // Keyboard navigation (slider mode assumed)
   document.addEventListener("keydown", (e) => {
     if (currentMode !== "slider" || isAnimating) return;
     if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      const nextIndex = (activeIndex + 1) % imageUrls.length;
+      const nextIndex = (activeIndex + 1) % imageUrlsSlider.length;
       transitionToSlide(nextIndex);
     } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      const prevIndex = (activeIndex - 1 + imageUrls.length) % imageUrls.length;
+      const prevIndex = (activeIndex - 1 + imageUrlsSlider.length) % imageUrlsSlider.length;
       transitionToSlide(prevIndex);
     }
   });
 
-  // 터치 스와이프 지원 (슬라이더 모드 전제)
+  // Touch swipe support (slider mode assumed)
   let touchStartX = 0;
   let touchEndX = 0;
   document.addEventListener("touchstart", (e) => {
@@ -588,10 +594,10 @@ function initApp() {
   const handleSwipe = () => {
     const swipeThreshold = 50;
     if (touchEndX < touchStartX - swipeThreshold) {
-      const nextIndex = (activeIndex + 1) % imageUrls.length;
+      const nextIndex = (activeIndex + 1) % imageUrlsSlider.length;
       transitionToSlide(nextIndex);
     } else if (touchEndX > touchStartX + swipeThreshold) {
-      const prevIndex = (activeIndex - 1 + imageUrls.length) % imageUrls.length;
+      const prevIndex = (activeIndex - 1 + imageUrlsSlider.length) % imageUrlsSlider.length;
       transitionToSlide(prevIndex);
     }
   };
