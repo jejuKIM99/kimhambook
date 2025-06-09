@@ -12,7 +12,7 @@
   ></script>
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Flip.min.js"
-    xintegrity="sha512-BQAAkzDHfly7jPwVhh0SpGxbvjRNEapCNkJ0VNSMFervZLsaeUch4P92skLoD70NXWlI1GOgrXRfR50b/quSSg==\"\
+    xintegrity="sha512-BQAAkzDHfly7jPwVhh0SpGxbvjRNEapCNkJ0VNSMFervZLsaeUch4P92skLoD70NXWlI1GOgrXRfR50b/quSSg==\"
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   ></script>
@@ -32,10 +32,9 @@
           data-index="0"
           data-title="Red_Line_Awards"
           data-paragraph="
-            The city speaks in angles and lines. What appears chaotic is actually ordered.
-            When we slow down enough to truly see, patterns emerge from noise.
-            Photography is meditation—a practice of presence that reveals the hidden structure
-            beneath the surface of our daily experience."
+          Red Line Awards is a blog-style site focused on films—covering a wide range from classics to recent releases. 
+          It offers fair evaluations and allows users to vote on movies, with results combined with jury scores to crown Movie of the Month and Movie of the Year. 
+          Additionally, it features curated lists like soundtracks, editors’ picks, a discussion board, developer tutorials, and advertising/business services."
           data-slider-image="./redline_inner.gif"
         >
           <div
@@ -132,7 +131,8 @@
   <div class="slider-image" id="slider-image"></div>
   <!-- Background parallax layer -->
   <div class="slider-image-bg" id="slider-image-bg"></div>
-        <div class="darkback"></div>
+  <!-- darkback 요소는 초기에는 숨겨지고, 슬라이더 모드에서만 나타나도록 CSS에서 제어 -->
+  <div class="darkback" id="darkback"></div> 
   <!-- Top layer - next slide -->
   <div class="slider-image-next" id="slider-image-next"></div>
   <!-- Transition overlay -->

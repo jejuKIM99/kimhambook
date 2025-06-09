@@ -76,6 +76,10 @@ function initApp() {
   const contentParagraph = document.getElementById("content-paragraph");
   const thumbnailItems = document.querySelectorAll(".thumbnail");
   const switchContainer = document.getElementById("switch");
+  const darkback = document.getElementById("darkback"); // darkback 요소 가져오기
+
+  // 초기 로드 시 darkback을 숨깁니다.
+  gsap.set(darkback, { opacity: 0, display: "none" });
 
   // Switch buttons
   const switchGrid = document.querySelector(".switch-button-grid");
@@ -104,7 +108,8 @@ function initApp() {
     return {
       title: item.getAttribute("data-title"),
       paragraph: item.getAttribute("data-paragraph").trim(),
-      sliderImageUrl: item.getAttribute("data-slider-image")
+      sliderImageUrl: item.getAttribute("data-slider-image"),
+      gridItemImageUrl: item.querySelector(".grid-item-img").style.backgroundImage // 정지 이미지 URL 추가
     };
   };
 
@@ -144,11 +149,14 @@ function initApp() {
         `.grid-item[data-index="${activeIndex}"]`
       );
       const activeItemRect = activeItem.getBoundingClientRect();
-
-      // Set the current active slider image URL
+      // 초기에는 정지 이미지를 사용합니다.
+      const initialGridImageUrl = getSlideDataFromHTML(activeIndex).gridItemImageUrl;
+      // 실제 슬라이더(GIF) 이미지를 가져옵니다.
       const activeSliderImageUrl = imageUrlsSlider[activeIndex];
-      sliderImage.style.backgroundImage = activeSliderImageUrl;
-      sliderImageBg.style.backgroundImage = activeSliderImageUrl;
+
+      // Initially set sliderImage and sliderImageBg to the still image
+      sliderImage.style.backgroundImage = initialGridImageUrl;
+      sliderImageBg.style.backgroundImage = initialGridImageUrl;
 
       // Consistent styling
       sliderImage.style.backgroundSize = "cover";
@@ -169,6 +177,33 @@ function initApp() {
         y: activeItemRect.top,
         opacity: 1,
         visibility: "visible"
+      });
+
+      // Darkback를 슬라이더 모드에서만 보이도록 설정
+      gsap.to(darkback, {
+        opacity: 1,
+        duration: TIMING.SHORTEST,
+        ease: "power2.inOut",
+        display: "block"
+      });
+
+      // GIF 로딩을 위한 Promise 생성
+      const gifLoadPromise = new Promise((gifResolve) => {
+        const img = new Image();
+        // activeSliderImageUrl에서 'url()' 부분을 제거하고 실제 URL만 추출
+        img.src = activeSliderImageUrl.replace(/url\(['"]?([^'"]*)['"]?\)/, '$1'); 
+        img.onload = () => {
+          gifResolve();
+        };
+        img.onerror = () => {
+          console.error("Failed to load GIF:", activeSliderImageUrl);
+          gifResolve(); // 에러 발생 시에도 블로킹 방지를 위해 resolve
+        };
+      });
+
+      // 2초 지연을 위한 Promise 생성
+      const delayPromise = new Promise((delayResolve) => {
+        setTimeout(delayResolve, 2000); // 2초 지연
       });
 
       // STEP 1: Expand height to 100vh (using FLIP)
@@ -193,54 +228,62 @@ function initApp() {
             duration: TIMING.BASE,
             ease: "mainEase",
             onComplete: () => {
-              // Hide the grid
-              gsap.to(grid, {
-                opacity: 0,
-                duration: TIMING.SHORTEST,
-                ease: "power2.inOut"
+              // GIF 로딩 또는 2초 지연 중 먼저 완료되는 것을 기다립니다.
+              Promise.race([gifLoadPromise, delayPromise]).then(() => {
+                // GIF 로딩이 완료되면 슬라이더 이미지와 배경을 GIF로 업데이트합니다.
+                sliderImage.style.backgroundImage = activeSliderImageUrl;
+                sliderImageBg.style.backgroundImage = activeSliderImageUrl;
+
+                // 나머지 애니메이션을 시작합니다.
+                // Hide the grid
+                gsap.to(grid, {
+                  opacity: 0,
+                  duration: TIMING.SHORTEST,
+                  ease: "power2.inOut"
+                });
+                // Show content (title, paragraph, thumbnails) animation
+                const contentTl = gsap.timeline({
+                  onComplete: resolve // showSliderView의 최종 resolve
+                });
+                contentTl.to(
+                  content,
+                  {
+                    opacity: 1,
+                    duration: TIMING.SHORT,
+                    ease: "mainEase"
+                  },
+                  0
+                );
+                contentTl.to(
+                  contentTitleSpan,
+                  {
+                    y: 0,
+                    duration: TIMING.BASE,
+                    ease: "sideEase"
+                  },
+                  TIMING.STAGGER_TINY
+                );
+                contentTl.to(
+                  contentParagraph,
+                  {
+                    opacity: 1,
+                    duration: TIMING.BASE,
+                    ease: "mainEase"
+                  },
+                  TIMING.STAGGER_SMALL
+                );
+                contentTl.to(
+                  thumbnailItems,
+                  {
+                    opacity: 1,
+                    y: 0,
+                    duration: TIMING.SHORT,
+                    stagger: TIMING.STAGGER_TINY,
+                    ease: "sideEase"
+                  },
+                  TIMING.STAGGER_MED
+                );
               });
-              // Show content (title, paragraph, thumbnails) animation
-              const contentTl = gsap.timeline({
-                onComplete: resolve
-              });
-              contentTl.to(
-                content,
-                {
-                  opacity: 1,
-                  duration: TIMING.SHORT,
-                  ease: "mainEase"
-                },
-                0
-              );
-              contentTl.to(
-                contentTitleSpan,
-                {
-                  y: 0,
-                  duration: TIMING.BASE,
-                  ease: "sideEase"
-                },
-                TIMING.STAGGER_TINY
-              );
-              contentTl.to(
-                contentParagraph,
-                {
-                  opacity: 1,
-                  duration: TIMING.BASE,
-                  ease: "mainEase"
-                },
-                TIMING.STAGGER_SMALL
-              );
-              contentTl.to(
-                thumbnailItems,
-                {
-                  opacity: 1,
-                  y: 0,
-                  duration: TIMING.SHORT,
-                  stagger: TIMING.STAGGER_TINY,
-                  ease: "sideEase"
-                },
-                TIMING.STAGGER_MED
-              );
             }
           });
         }
@@ -267,6 +310,14 @@ function initApp() {
           gsap.set([sliderImageNext, sliderImageBg, transitionOverlay], {
             opacity: 0,
             visibility: "hidden"
+          });
+
+          // Darkback를 그리드 모드에서 숨기도록 설정
+          gsap.to(darkback, {
+            opacity: 0,
+            duration: TIMING.SHORTEST,
+            ease: "power2.inOut",
+            display: "none"
           });
 
           // STEP 1: Shrink width to original grid item width (FLIP)
